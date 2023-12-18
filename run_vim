@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+
+import re
+import subprocess
+import sys
+
+
+def clean_output(output: str) -> str:
+    result = ""
+    output = output.replace("\n\n", "\n")
+    remove_terminal_warnings = True
+    for line in output.splitlines(keepends=True):
+        line = line.replace("\r", "")
+        if remove_terminal_warnings and line.startswith(
+            (
+                "Vim: Warning: Output is not to a terminal",
+                "Vim: Warning: Input is not from a terminal",
+            )
+        ):
+            continue
+
+        remove_terminal_warnings = False
+        result += remove_escape_codes(line)
+
+    return result
+
+
+def remove_escape_codes(line):
+    return re.sub("\x1b\\[\\d+;\\d+H", "", line)
+
+
+def main():
+    vimscript = sys.argv[1]
+    argv = repr(sys.argv[2:])[1:-1]
+    cmd = [
+        "vim",
+        "-n",
+        "-T",
+        "dumb",
+        "--cmd",
+        f":source {vimscript}",
+        "--cmd",
+        f":call Main({argv})",
+        "--cmd",
+        ":quit!",
+    ]
+    result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf-8")
+    output = clean_output(result.stdout)
+    print(output, end="")
+    sys.exit(result.returncode)
+
+
+if __name__ == "__main__":
+    main()
