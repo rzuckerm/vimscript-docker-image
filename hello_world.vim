@@ -1,3 +1,3 @@
-func Main(...) 
+func! Main(...) 
     echo "Hello, world!"
 endfunc

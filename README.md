@@ -19,9 +19,9 @@ The Vimscript program is expected to have a `Main` function that takes a variabl
 number of arguments. For example:
 
 ```vim
-function Main(...)
+func! Main(...)
     <your script here>
-endfunction
+endfunc
 ```
 
 ## Running Vimscript
