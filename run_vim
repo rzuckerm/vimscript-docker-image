@@ -20,13 +20,13 @@ def clean_output(output: str) -> str:
             continue
 
         remove_terminal_warnings = False
-        result += remove_escape_codes(line)
+        result += replace_escape_codes(line)
 
     return result
 
 
-def remove_escape_codes(line):
-    return re.sub("\x1b\\[\\d+;\\d+H", "", line)
+def replace_escape_codes(line):
+    return re.sub("\x1b\\[\\d+;(\\d+)H", lambda m: " " * (int(m.group(1)) - 1), line)
 
 
 def main():
